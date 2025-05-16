@@ -47,7 +47,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({ score, feedback, downloadUrl, onD
     <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 flex flex-col gap-6 items-center border border-gray-200 dark:border-gray-800">
       <div className="flex flex-col items-center gap-1 w-full">
         <span className="text-4xl font-extrabold text-blue-600 dark:text-blue-400 text-center">{score}</span>
-        <span className="text-base text-gray-500 dark:text-gray-400 font-medium text-center">Resume Score</span>
+        <span className="text-base text-gray-500 dark:text-gray-400 font-medium text-center">ATS Score</span>
         {showAtsScore && (
           <span className="text-sm text-green-600 dark:text-green-400 font-semibold mt-1 text-center">ATS Score: {atsScore}</span>
         )}
