@@ -14,7 +14,7 @@ export default function Home() {
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -33,8 +33,12 @@ export default function Home() {
       setScore(match ? parseInt(match[1], 10) : 90); // fallback to 90
       setFeedback(result.result_text);
       setDownloadUrl(result.pdf_download_url);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
