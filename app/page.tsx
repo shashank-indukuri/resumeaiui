@@ -88,7 +88,16 @@ export default function Home() {
             {loading ? "Optimizing..." : "Optimize Resume"}
           </button>
         </form>
-        {error && <div className="text-red-600 text-center font-medium">{error}</div>}
+        {error && (
+          <div className="w-full flex justify-center mt-2">
+            <div className="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/40 border border-yellow-200 dark:border-yellow-700 rounded-lg px-4 py-2 text-yellow-800 dark:text-yellow-200 text-sm shadow-sm max-w-md text-center">
+              <span className="text-xl">⚡️</span>
+              <span>
+                Having trouble? Our AI is still learning and sometimes needs a break. Try again or use a smaller file.
+              </span>
+            </div>
+          </div>
+        )}
         {loading && (
           <div className="flex flex-col items-center gap-2 mt-4 animate-pulse">
             <svg className="w-8 h-8 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -96,7 +105,7 @@ export default function Home() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
             </svg>
             <span className="text-blue-700 dark:text-blue-300 text-sm font-medium">{loadingMessages[loadingMsgIdx]}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don’t close this tab.</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don't close this tab.</span>
           </div>
         )}
         {score !== null && (
