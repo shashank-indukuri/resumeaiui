@@ -40,7 +40,7 @@ export default function Home() {
       setLoadingMsgIdx(0);
     }
     return () => clearInterval(interval);
-  }, [loading]);
+  }, [loading, loadingMessages.length]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,7 +105,7 @@ export default function Home() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
             </svg>
             <span className="text-blue-700 dark:text-blue-300 text-sm font-medium">{loadingMessages[loadingMsgIdx]}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don't close this tab.</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don&apos;t close this tab.</span>
           </div>
         )}
         {score !== null && (
