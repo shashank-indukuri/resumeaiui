@@ -42,7 +42,6 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
   feedback,
   downloadUrl,
   onDownload,
-  showCompare
 }) => {
   const [expanded, setExpanded] = useState(false);
   const { summary, strengths, weaknesses, atsScore } = parseFeedback(feedback);
