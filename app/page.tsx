@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import ResumeUploader from "./ResumeUploader";
 import JobDescInput from "./JobDescInput";
-import ScoreCard from "./ScoreCard";
+import ScoreCard from "./components/ScoreCard";
 import { optimizeResume, downloadOptimizedResume } from "./api";
 
 export default function Home() {
@@ -13,6 +13,10 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
+  const [showComparison, setShowComparison] = useState(false);
+  const [originalResume, setOriginalResume] = useState<any>(null);
+  const [optimizedResume, setOptimizedResume] = useState<any>(null);
+  const [resumeDiff, setResumeDiff] = useState<any>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -28,6 +32,7 @@ export default function Home() {
     "Finalizing your optimized resume..."
   ];
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
+
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -49,6 +54,9 @@ export default function Home() {
     setScore(null);
     setFeedback("");
     setDownloadUrl(undefined);
+    setOriginalResume(null);
+    setOptimizedResume(null);
+    setResumeDiff(null);
     try {
       if (!resume || !jobdesc) {
         setError("Please upload a resume and paste a job description.");
@@ -56,11 +64,19 @@ export default function Home() {
         return;
       }
       const result = await optimizeResume({ resume, jobdesc });
-      // Assume result.result_text contains score and feedback, parse accordingly
+      
+      // Parse the score from result_text
       const match = result.result_text.match(/score\s*:?\s*(\d+)/i);
-      setScore(match ? parseInt(match[1], 10) : 90); // fallback to 90
+      setScore(match ? parseInt(match[1], 10) : 90);
       setFeedback(result.result_text);
       setDownloadUrl(result.pdf_download_url);
+      
+      // Set the original and optimized resumes
+      if (result.diff) {
+        setOriginalResume(result.diff.original);
+        setOptimizedResume(result.diff.optimized);
+        setResumeDiff(result.diff.changes);
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -108,15 +124,23 @@ export default function Home() {
             <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don&apos;t close this tab.</span>
           </div>
         )}
+        {/* ScoreCard and Compare Button */}
         {score !== null && (
           <ScoreCard 
             score={score} 
             feedback={feedback} 
             downloadUrl={downloadUrl} 
             onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl)) : undefined}
+            onCompare={originalResume && optimizedResume ? (() => setShowComparison(true)) : undefined}
+            showCompare={!!(originalResume && optimizedResume)}
           />
         )}
       </div>
+
+      {/* {showComparison && resumeDiff && (
+        <ResumeChangeFeed diff={resumeDiff} />
+      )}
+       */}
       <footer className="mt-10 text-gray-500 dark:text-gray-400 text-xs text-center">
         &copy; {new Date().getFullYear()} Resume Optimizer AI. All rights reserved.
       </footer>
