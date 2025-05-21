@@ -6,7 +6,6 @@ export interface ScoreCardProps {
   feedback: string;
   downloadUrl?: string;
   onDownload?: () => void;
-  onCompare?: () => void;
   showCompare?: boolean;
 }
 
@@ -17,7 +16,6 @@ function parseFeedback(feedback: string) {
   const strengthsMatch = feedback.match(/Strengths:\s*\[([^\]]+)\]/);
   const weaknessesMatch = feedback.match(/Weaknesses:\s*\[([^\]]+)\]/);
   const atsScoreMatch = feedback.match(/ATS Score:\s*(\d+)/i);
-  const iterationsMatch = feedback.match(/Iterations:\s*(\d+)/i);
 
   // Parse strengths and weaknesses as arrays
   const strengths = strengthsMatch
@@ -35,8 +33,7 @@ function parseFeedback(feedback: string) {
     summary: summaryMatch ? summaryMatch[1].trim() : "",
     strengths,
     weaknesses,
-    atsScore: atsScoreMatch ? atsScoreMatch[1] : null,
-    iterations: iterationsMatch ? iterationsMatch[1] : null,
+    atsScore: atsScoreMatch ? atsScoreMatch[1] : null
   };
 }
 
@@ -45,11 +42,10 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
   feedback,
   downloadUrl,
   onDownload,
-  onCompare,
   showCompare
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { summary, strengths, weaknesses, atsScore, iterations } = parseFeedback(feedback);
+  const { summary, strengths, weaknesses, atsScore } = parseFeedback(feedback);
   const showAtsScore = atsScore && atsScore !== String(score);
 
   return (

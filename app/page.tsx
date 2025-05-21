@@ -13,10 +13,6 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
-  const [showComparison, setShowComparison] = useState(false);
-  const [originalResume, setOriginalResume] = useState<any>(null);
-  const [optimizedResume, setOptimizedResume] = useState<any>(null);
-  const [resumeDiff, setResumeDiff] = useState<any>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -54,9 +50,6 @@ export default function Home() {
     setScore(null);
     setFeedback("");
     setDownloadUrl(undefined);
-    setOriginalResume(null);
-    setOptimizedResume(null);
-    setResumeDiff(null);
     try {
       if (!resume || !jobdesc) {
         setError("Please upload a resume and paste a job description.");
@@ -70,13 +63,6 @@ export default function Home() {
       setScore(match ? parseInt(match[1], 10) : 90);
       setFeedback(result.result_text);
       setDownloadUrl(result.pdf_download_url);
-      
-      // Set the original and optimized resumes
-      if (result.diff) {
-        setOriginalResume(result.diff.original);
-        setOptimizedResume(result.diff.optimized);
-        setResumeDiff(result.diff.changes);
-      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -131,8 +117,6 @@ export default function Home() {
             feedback={feedback} 
             downloadUrl={downloadUrl} 
             onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl)) : undefined}
-            onCompare={originalResume && optimizedResume ? (() => setShowComparison(true)) : undefined}
-            showCompare={!!(originalResume && optimizedResume)}
           />
         )}
       </div>
