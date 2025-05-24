@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import DiffViewer from 'react-diff-viewer';
 
+type ResumeData = Record<string, unknown> | string | number | boolean | null | undefined;
+
 interface DiffProps {
-  original: any;
-  optimized: any;
+  original: Record<string, ResumeData>;
+  optimized: Record<string, ResumeData>;
 }
 
 const ResumeComparison: React.FC<DiffProps> = ({ original, optimized }) => {
@@ -32,7 +34,7 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized }) => {
       .join(' ');
   };
 
-  const preprocessData = (data: any, indent = 0): string => {
+  const preprocessData = (data: ResumeData, indent = 0): string => {
     if (data === null || data === undefined) {
       return 'None';
     }
@@ -49,7 +51,7 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized }) => {
         return data.map((item) => {
           const itemLines = Object.entries(item).map(([key, value]) => {
             const formattedKey = capitalizeKey(key);
-            return `${'  '.repeat(indent + 1)}${formattedKey}: ${preprocessData(value, indent + 2)}`;
+            return `${'  '.repeat(indent + 1)}${formattedKey}: ${preprocessData(value as ResumeData, indent + 2)}`;
           });
           return itemLines.join('\n');
         }).join('\n\n');
@@ -63,10 +65,10 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized }) => {
     if (typeof data === 'object') {
       const uniqueEntries = Object.entries(data).reduce((acc, [key, value]) => {
         if (!acc.some(([k]) => k === key)) {
-          acc.push([key, value]);
+          acc.push([key, value as ResumeData]);
         }
         return acc;
-      }, [] as [string, any][]);
+      }, [] as [string, ResumeData][]);
 
       return uniqueEntries
         .map(([key, value]) => {

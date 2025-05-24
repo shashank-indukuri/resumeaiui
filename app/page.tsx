@@ -6,6 +6,8 @@ import ScoreCard from "./components/ScoreCard";
 import { optimizeResume, downloadOptimizedResume } from "./api";
 import ResumeComparison from "./components/ResumeComparison";
 
+type ResumeData = Record<string, unknown> | string | number | boolean | null | undefined;
+
 export default function Home() {
   const [resume, setResume] = useState<File | null>(null);
   const [jobdesc, setJobdesc] = useState("");
@@ -15,7 +17,7 @@ export default function Home() {
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
   const [showComparison, setShowComparison] = useState(false);
-  const [resumeDiff, setResumeDiff] = useState<any>(null);
+  const [resumeDiff, setResumeDiff] = useState<Record<string, unknown> | null>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -133,8 +135,8 @@ export default function Home() {
 
       {showComparison && resumeDiff && (
         <ResumeComparison 
-          original={resumeDiff.original}
-          optimized={resumeDiff.optimized}
+          original={resumeDiff.original as Record<string, ResumeData>}
+          optimized={resumeDiff.optimized as Record<string, ResumeData>}
         />
         )}
       <footer className="mt-10 text-gray-500 dark:text-gray-400 text-xs text-center">
