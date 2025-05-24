@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import React, { useMemo, useState } from 'react';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 interface DiffChanges {
   type_changes?: Record<string, {
@@ -23,16 +23,28 @@ interface DiffProps {
 }
 
 const ResumeComparison: React.FC<DiffProps> = ({ original, optimized, changes }) => {
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(section)) {
+        newSet.delete(section);
+      } else {
+        newSet.add(section);
+      }
+      return newSet;
+    });
+  };
+
   const getChangedSections = useMemo(() => {
     const sections = new Set<string>();
     
-    // Helper function to extract section name from path
     const extractSection = (path: string) => {
       const match = path.match(/root\['([^']+)'\]/);
       return match ? match[1] : null;
     };
 
-    // Process all types of changes
     Object.keys(changes.type_changes || {}).forEach(path => {
       const section = extractSection(path);
       if (section) sections.add(section);
@@ -91,47 +103,55 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized, changes })
   };
 
   return (
-    <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden mt-8">
       <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Resume Comparison</h2>
       </div>
       
-      <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700">
-        {/* Original Version */}
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Original Version</span>
-          </div>
-          <div className="space-y-6">
-            {getChangedSections.map(section => (
-              <div key={section} className="space-y-2">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
-                  {section.replace(/_/g, ' ')}
-                </h3>
-                {renderValue(original[section])}
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        {getChangedSections.map(section => (
+          <div key={section} className="w-full">
+            <button
+              onClick={() => toggleSection(section)}
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
+                {section.replace(/_/g, ' ')}
+              </h3>
+              {expandedSections.has(section) ? (
+                <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+              )}
+            </button>
+            
+            {expandedSections.has(section) && (
+              <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700">
+                {/* Original Version */}
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50">
+                  <div className="mb-2">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Original Version</span>
+                  </div>
+                  <div className="prose dark:prose-invert max-w-none">
+                    {renderValue(original[section])}
+                  </div>
+                </div>
 
-        {/* Optimized Version */}
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Optimized Version</span>
-          </div>
-          <div className="space-y-6">
-            {getChangedSections.map(section => (
-              <div key={section} className="space-y-2">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
-                  {section.replace(/_/g, ' ')}
-                </h3>
-                <div className={isValueChanged(section, '') ? 'bg-green-50 dark:bg-green-900/20 p-2 rounded' : ''}>
-                  {renderValue(optimized[section])}
+                {/* Optimized Version */}
+                <div className="p-4">
+                  <div className="mb-2">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Optimized Version</span>
+                  </div>
+                  <div className={`prose dark:prose-invert max-w-none ${
+                    isValueChanged(section, '') ? 'bg-green-50 dark:bg-green-900/20 p-2 rounded' : ''
+                  }`}>
+                    {renderValue(optimized[section])}
+                  </div>
                 </div>
               </div>
-            ))}
+            )}
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
