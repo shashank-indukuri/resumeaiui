@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import ResumeUploader from "./ResumeUploader";
 import JobDescInput from "./JobDescInput";
 import ScoreCard from "./components/ScoreCard";
+import ResumeComparison from "./components/ResumeComparison";
 import { optimizeResume, downloadOptimizedResume } from "./api";
 import ResumeComparison from "./components/ResumeComparison";
 
@@ -34,7 +35,6 @@ export default function Home() {
   ];
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
 
-
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
     if (loading) {
@@ -56,6 +56,7 @@ export default function Home() {
     setFeedback("");
     setDownloadUrl(undefined);
     setShowComparison(false); 
+
     try {
       if (!resume || !jobdesc) {
         setError("Please upload a resume and paste a job description.");
@@ -117,7 +118,6 @@ export default function Home() {
             <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don&apos;t close this tab.</span>
           </div>
         )}
-        {/* ScoreCard and Compare Button */}
         {score !== null && (
           <ScoreCard 
             score={score} 
@@ -131,8 +131,15 @@ export default function Home() {
             }}
           />
         )}
+        {diff && (
+          <ResumeComparison 
+            original={diff.original}
+            optimized={diff.optimized}
+            changes={diff.changes}
+          />
+        )}
       </div>
-
+ 
       {showComparison && resumeDiff && (
         <ResumeComparison 
           original={resumeDiff.original as Record<string, ResumeData>}
