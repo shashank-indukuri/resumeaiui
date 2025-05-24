@@ -4,6 +4,7 @@ import ResumeUploader from "./ResumeUploader";
 import JobDescInput from "./JobDescInput";
 import ScoreCard from "./components/ScoreCard";
 import { optimizeResume, downloadOptimizedResume } from "./api";
+import ResumeComparison from "./components/ResumeComparison";
 
 export default function Home() {
   const [resume, setResume] = useState<File | null>(null);
@@ -13,6 +14,8 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
+  const [showComparison, setShowComparison] = useState(false);
+  const [resumeDiff, setResumeDiff] = useState<any>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -50,6 +53,7 @@ export default function Home() {
     setScore(null);
     setFeedback("");
     setDownloadUrl(undefined);
+    setShowComparison(false); 
     try {
       if (!resume || !jobdesc) {
         setError("Please upload a resume and paste a job description.");
@@ -63,6 +67,7 @@ export default function Home() {
       setScore(match ? parseInt(match[1], 10) : 90);
       setFeedback(result.result_text);
       setDownloadUrl(result.pdf_download_url);
+      setResumeDiff(result.diff);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -117,14 +122,21 @@ export default function Home() {
             feedback={feedback} 
             downloadUrl={downloadUrl} 
             onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl)) : undefined}
+            showCompare={true}
+            onCompare={() => {
+              setShowComparison(true);
+              setResumeDiff(resumeDiff);
+            }}
           />
         )}
       </div>
 
-      {/* {showComparison && resumeDiff && (
-        <ResumeChangeFeed diff={resumeDiff} />
-      )}
-       */}
+      {showComparison && resumeDiff && (
+        <ResumeComparison 
+          original={resumeDiff.original}
+          optimized={resumeDiff.optimized}
+        />
+        )}
       <footer className="mt-10 text-gray-500 dark:text-gray-400 text-xs text-center">
         &copy; {new Date().getFullYear()} Resume Optimizer AI. All rights reserved.
       </footer>

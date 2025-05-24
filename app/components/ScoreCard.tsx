@@ -7,6 +7,7 @@ export interface ScoreCardProps {
   downloadUrl?: string;
   onDownload?: () => void;
   showCompare?: boolean;
+  onCompare?: () => void;
 }
 
 // Helper to parse feedback string into structured data
@@ -42,6 +43,8 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
   feedback,
   downloadUrl,
   onDownload,
+  showCompare,
+  onCompare,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const { summary, strengths, weaknesses, atsScore } = parseFeedback(feedback);
@@ -140,6 +143,14 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
             className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
             Download Resume
+          </button>
+        )}
+        {showCompare && onCompare && (
+          <button
+            onClick={onCompare}
+            className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+          >
+            Compare Changes
           </button>
         )}
       </div>
