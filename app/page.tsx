@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import ResumeUploader from "./ResumeUploader";
 import JobDescInput from "./JobDescInput";
 import ScoreCard from "./components/ScoreCard";
+import ResumeComparison from "./components/ResumeComparison";
 import { optimizeResume, downloadOptimizedResume } from "./api";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
+  const [diff, setDiff] = useState<any>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -28,7 +30,6 @@ export default function Home() {
     "Finalizing your optimized resume..."
   ];
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
-
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -50,6 +51,7 @@ export default function Home() {
     setScore(null);
     setFeedback("");
     setDownloadUrl(undefined);
+    setDiff(null);
     try {
       if (!resume || !jobdesc) {
         setError("Please upload a resume and paste a job description.");
@@ -63,6 +65,9 @@ export default function Home() {
       setScore(match ? parseInt(match[1], 10) : 90);
       setFeedback(result.result_text);
       setDownloadUrl(result.pdf_download_url);
+      if (result.diff) {
+        setDiff(result.diff);
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -110,7 +115,6 @@ export default function Home() {
             <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don&apos;t close this tab.</span>
           </div>
         )}
-        {/* ScoreCard and Compare Button */}
         {score !== null && (
           <ScoreCard 
             score={score} 
@@ -119,12 +123,15 @@ export default function Home() {
             onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl)) : undefined}
           />
         )}
+        {diff && (
+          <ResumeComparison 
+            original={diff.original}
+            optimized={diff.optimized}
+            changes={diff.changes}
+          />
+        )}
       </div>
 
-      {/* {showComparison && resumeDiff && (
-        <ResumeChangeFeed diff={resumeDiff} />
-      )}
-       */}
       <footer className="mt-10 text-gray-500 dark:text-gray-400 text-xs text-center">
         &copy; {new Date().getFullYear()} Resume Optimizer AI. All rights reserved.
       </footer>
