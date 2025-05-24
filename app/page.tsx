@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import ResumeUploader from "./ResumeUploader";
 import JobDescInput from "./JobDescInput";
 import ScoreCard from "./components/ScoreCard";
-import ResumeComparison from "./components/ResumeComparison";
 import { optimizeResume, downloadOptimizedResume } from "./api";
 import ResumeComparison from "./components/ResumeComparison";
 
@@ -129,13 +128,6 @@ export default function Home() {
               setShowComparison(true);
               setResumeDiff(resumeDiff);
             }}
-          />
-        )}
-        {diff && (
-          <ResumeComparison 
-            original={diff.original}
-            optimized={diff.optimized}
-            changes={diff.changes}
           />
         )}
       </div>
