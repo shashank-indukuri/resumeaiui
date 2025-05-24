@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import ResumeUploader from "./ResumeUploader";
 import JobDescInput from "./JobDescInput";
 import ScoreCard from "./components/ScoreCard";
-import ResumeComparison from "./components/ResumeComparison";
 import { optimizeResume, downloadOptimizedResume } from "./api";
+import ResumeComparison from "./components/ResumeComparison";
+
+type ResumeData = Record<string, unknown> | string | number | boolean | null | undefined;
 
 export default function Home() {
   const [resume, setResume] = useState<File | null>(null);
@@ -14,7 +16,8 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
-  const [diff, setDiff] = useState<any>(null);
+  const [showComparison, setShowComparison] = useState(false);
+  const [resumeDiff, setResumeDiff] = useState<Record<string, unknown> | null>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -51,7 +54,8 @@ export default function Home() {
     setScore(null);
     setFeedback("");
     setDownloadUrl(undefined);
-    setDiff(null);
+    setShowComparison(false); 
+
     try {
       if (!resume || !jobdesc) {
         setError("Please upload a resume and paste a job description.");
@@ -65,9 +69,7 @@ export default function Home() {
       setScore(match ? parseInt(match[1], 10) : 90);
       setFeedback(result.result_text);
       setDownloadUrl(result.pdf_download_url);
-      if (result.diff) {
-        setDiff(result.diff);
-      }
+      setResumeDiff(result.diff);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -121,17 +123,21 @@ export default function Home() {
             feedback={feedback} 
             downloadUrl={downloadUrl} 
             onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl)) : undefined}
-          />
-        )}
-        {diff && (
-          <ResumeComparison 
-            original={diff.original}
-            optimized={diff.optimized}
-            changes={diff.changes}
+            showCompare={true}
+            onCompare={() => {
+              setShowComparison(true);
+              setResumeDiff(resumeDiff);
+            }}
           />
         )}
       </div>
-
+ 
+      {showComparison && resumeDiff && (
+        <ResumeComparison 
+          original={resumeDiff.original as Record<string, ResumeData>}
+          optimized={resumeDiff.optimized as Record<string, ResumeData>}
+        />
+        )}
       <footer className="mt-10 text-gray-500 dark:text-gray-400 text-xs text-center">
         &copy; {new Date().getFullYear()} Resume Optimizer AI. All rights reserved.
       </footer>

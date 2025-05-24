@@ -1,30 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import DiffViewer from 'react-diff-viewer';
 
-interface DiffChanges {
-  type_changes?: Record<string, {
-    old_type: string;
-    new_type: string;
-    old_value: any;
-    new_value: any;
-  }>;
-  values_changed?: Record<string, {
-    old_value: any;
-    new_value: any;
-  }>;
-  iterable_item_added?: Record<string, any>;
-  iterable_item_removed?: Record<string, any>;
-}
+type ResumeData = Record<string, unknown> | string | number | boolean | null | undefined;
 
 interface DiffProps {
-  original: any;
-  optimized: any;
-  changes: DiffChanges;
+  original: Record<string, ResumeData>;
+  optimized: Record<string, ResumeData>;
 }
 
-const ResumeComparison: React.FC<DiffProps> = ({ original, optimized, changes }) => {
+const ResumeComparison: React.FC<DiffProps> = ({ original, optimized }) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(Object.keys(original || {}))
+    new Set()
   );
 
   const toggleSection = (section: string) => {
@@ -39,81 +26,64 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized, changes })
     });
   };
 
-  const getChangeType = (path: string) => {
-    if (changes.type_changes?.[path]) return 'modified';
-    if (changes.values_changed?.[path]) return 'modified';
-    if (changes.iterable_item_added?.[path]) return 'added';
-    if (changes.iterable_item_removed?.[path]) return 'removed';
-    return null;
+  const capitalizeKey = (key: string): string => {
+    return key
+      .replace(/_/g, ' ') // Convert snake_case to spaces
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
-  const renderValue = (value: any, path: string = ''): React.ReactNode => {
-    if (value === null || value === undefined) {
-      return <span className="text-gray-400 italic">None</span>;
+  const preprocessData = (data: ResumeData, indent = 0): string => {
+    if (data === null || data === undefined) {
+      return 'None';
     }
 
-    const changeType = getChangeType(path);
-    const changeStyles = {
-      added: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 px-1 rounded',
-      removed: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 px-1 rounded line-through',
-      modified: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-1 rounded'
-    };
-
-    if (Array.isArray(value)) {
-      return (
-        <ul className="space-y-2">
-          {value.map((item, index) => {
-            const itemPath = `${path}[${index}]`;
-            const itemChangeType = getChangeType(itemPath);
-            return (
-              <li 
-                key={index}
-                className={`ml-4 ${itemChangeType ? changeStyles[itemChangeType] : ''}`}
-              >
-                {typeof item === 'object' ? 
-                  renderValue(item, itemPath) : 
-                  <span>{String(item)}</span>
-                }
-              </li>
-            );
-          })}
-        </ul>
-      );
+    if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
+      return String(data);
     }
 
-    if (typeof value === 'object') {
-      return (
-        <div className="space-y-2">
-          {Object.entries(value).map(([key, val]) => {
-            const newPath = path ? `${path}['${key}']` : `root['${key}']`;
-            const fieldChangeType = getChangeType(newPath);
-            return (
-              <div 
-                key={key} 
-                className={`ml-4 ${fieldChangeType ? changeStyles[fieldChangeType] : ''}`}
-              >
-                <span className="font-medium capitalize">{key.replace(/_/g, ' ')}: </span>
-                {renderValue(val, newPath)}
-              </div>
-            );
-          })}
-        </div>
-      );
+    if (Array.isArray(data)) {
+      if (data.length === 0) return 'Empty list';
+      
+      // Check if array contains objects
+      if (typeof data[0] === 'object' && data[0] !== null) {
+        return data.map((item) => {
+          const itemLines = Object.entries(item).map(([key, value]) => {
+            const formattedKey = capitalizeKey(key);
+            return `${'  '.repeat(indent + 1)}${formattedKey}: ${preprocessData(value as ResumeData, indent + 2)}`;
+          });
+          return itemLines.join('\n');
+        }).join('\n\n');
+      }
+      
+      return data.map((item) => {
+        return `${'  '.repeat(indent + 1)}${preprocessData(item, indent + 1)}`;
+      }).join('\n');
     }
 
-    return (
-      <span className={changeType ? changeStyles[changeType] : ''}>
-        {String(value)}
-      </span>
-    );
+    if (typeof data === 'object') {
+      const uniqueEntries = Object.entries(data).reduce((acc, [key, value]) => {
+        if (!acc.some(([k]) => k === key)) {
+          acc.push([key, value as ResumeData]);
+        }
+        return acc;
+      }, [] as [string, ResumeData][]);
+
+      return uniqueEntries
+        .map(([key, value]) => {
+          const formattedKey = capitalizeKey(key);
+          return `${'  '.repeat(indent)}${formattedKey}: ${preprocessData(value, indent + 1)}`;
+        })
+        .join('\n');
+    }
+
+    return 'Unknown type';
   };
 
-  const sections = useMemo(() => {
-    return Object.keys(original || {}).filter(section => 
-      section !== '__typename' && 
-      typeof original[section] !== 'function'
-    );
-  }, [original]);
+  const sections = Object.keys(original || {}).filter(
+    section => section !== '__typename' && typeof original[section] !== 'function'
+  );
 
   if (!original || !optimized) {
     return null;
@@ -121,38 +91,19 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized, changes })
 
   return (
     <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden mt-8">
-      <div className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700">
+      <div className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 mb-4">
         <h2 className="text-lg font-semibold text-white">Resume Comparison</h2>
-        <div className="flex gap-4 mt-2 text-sm text-white/90">
-          <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-green-400"></span>
-            <span>Added</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-red-400"></span>
-            <span>Removed</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-            <span>Modified</span>
-          </div>
-        </div>
       </div>
       
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         {sections.map(section => (
-          <div key={section} className="w-full">
+          <div key={section} className="w-full py-4">
             <button
               onClick={() => toggleSection(section)}
               className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize flex items-center gap-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
                 {section.replace(/_/g, ' ')}
-                {getChangeType(`root['${section}']`) && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                    Changed
-                  </span>
-                )}
               </h3>
               {expandedSections.has(section) ? (
                 <ChevronUpIcon className="w-5 h-5 text-gray-500" />
@@ -162,24 +113,13 @@ const ResumeComparison: React.FC<DiffProps> = ({ original, optimized, changes })
             </button>
             
             {expandedSections.has(section) && (
-              <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700">
-                <div className="p-4 bg-gray-50 dark:bg-gray-800/50">
-                  <div className="mb-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Original Version</span>
-                  </div>
-                  <div className="prose dark:prose-invert max-w-none">
-                    {renderValue(original[section], `root['${section}']`)}
-                  </div>
-                </div>
-
-                <div className="p-4">
-                  <div className="mb-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Optimized Version</span>
-                  </div>
-                  <div className="prose dark:prose-invert max-w-none">
-                    {renderValue(optimized[section], `root['${section}']`)}
-                  </div>
-                </div>
+              <div className="p-4 mt-2">
+                <DiffViewer
+                  oldValue={preprocessData(original[section])}
+                  newValue={preprocessData(optimized[section])}
+                  splitView={true}
+                  showDiffOnly={false}
+                />
               </div>
             )}
           </div>
