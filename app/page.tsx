@@ -122,7 +122,7 @@ export default function Home() {
             score={score} 
             feedback={feedback} 
             downloadUrl={downloadUrl} 
-            onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl)) : undefined}
+            onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl, resume?.name)) : undefined}
             showCompare={true}
             onCompare={() => {
               setShowComparison(true);
