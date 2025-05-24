@@ -19,15 +19,26 @@ export async function optimizeResume({ resume, jobdesc }: { resume: File; jobdes
   return result;
 }
 
-export async function downloadOptimizedResume(downloadUrl: string) {
+export async function downloadOptimizedResume(downloadUrl: string, originalFilename?: string) {
   console.log("Downloading optimized resume from:", downloadUrl);
   const response = await fetch(`${API_BASE_URL}${downloadUrl}`);
   if (!response.ok) throw new Error("Failed to download optimized resume");
+
   const blob = await response.blob();
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "optimized_resume.pdf";
+
+  // Generate date string (YYYY-MM-DD format)
+  const today = new Date();
+  const dateString = today.toISOString().split('T')[0]; // e.g., "2023-11-15"
+
+  // Dynamic filename: append date to the original name
+  const dynamicFilename = originalFilename
+    ? `${originalFilename.replace(/\.[^/.]+$/, "")}_${dateString}.pdf`
+    : `resume_${dateString}.pdf`;
+
+  a.download = dynamicFilename;
   document.body.appendChild(a);
   a.click();
   a.remove();
