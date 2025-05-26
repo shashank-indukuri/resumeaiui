@@ -2,58 +2,37 @@ import React, { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 export interface ScoreCardProps {
-  score: number;
-  feedback: string;
+  initialScore: number;
+  finalScore: number;
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
   downloadUrl?: string;
   onDownload?: () => void;
   showCompare?: boolean;
   onCompare?: () => void;
 }
 
-// Helper to parse feedback string into structured data
-function parseFeedback(feedback: string) {
-  // Use regex to extract sections
-  const summaryMatch = feedback.match(/Summary:\s*([^\n]+)/);
-  const strengthsMatch = feedback.match(/Strengths:\s*\[([^\]]+)\]/);
-  const weaknessesMatch = feedback.match(/Weaknesses:\s*\[([^\]]+)\]/);
-  const atsScoreMatch = feedback.match(/ATS Score:\s*(\d+)/i);
-
-  // Parse strengths and weaknesses as arrays
-  const strengths = strengthsMatch
-    ? strengthsMatch[1]
-        .split(",")
-        .map((s) => s.replace(/^'/, "").replace(/'$/, "").trim())
-    : [];
-  const weaknesses = weaknessesMatch
-    ? weaknessesMatch[1]
-        .split(",")
-        .map((s) => s.replace(/^'/, "").replace(/'$/, "").trim())
-    : [];
-
-  return {
-    summary: summaryMatch ? summaryMatch[1].trim() : "",
-    strengths,
-    weaknesses,
-    atsScore: atsScoreMatch ? atsScoreMatch[1] : null
-  };
-}
-
 const ScoreCard: React.FC<ScoreCardProps> = ({
-  score,
-  feedback,
+  initialScore,
+  finalScore,
+  summary,
+  strengths,
+  weaknesses,
   downloadUrl,
   onDownload,
   showCompare,
   onCompare,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { summary, strengths, weaknesses, atsScore } = parseFeedback(feedback);
-  const showAtsScore = atsScore && atsScore !== String(score);
+  const scoreImprovement = finalScore - initialScore;
+  const improvementPercentage = Math.round((scoreImprovement / initialScore) * 100);
 
   return (
     <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-800">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setExpanded(v => !v)}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+          {/* Final Score Circle */}
           <div className="relative">
             <svg className="w-20 h-20">
               <circle
@@ -68,7 +47,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
               <circle
                 className="text-blue-600 dark:text-blue-400"
                 strokeWidth="8"
-                strokeDasharray={`${score * 2.26} 226`}
+                strokeDasharray={`${finalScore * 2.26} 226`}
                 strokeLinecap="round"
                 stroke="currentColor"
                 fill="transparent"
@@ -78,16 +57,28 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
               />
             </svg>
             <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-gray-900 dark:text-white">
-              {score}
+              {finalScore}
             </span>
           </div>
-          <div>
+
+          {/* Score Comparison */}
+          <div className="space-y-1">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Resume Score</h3>
-            {showAtsScore && (
-              <span className="text-sm text-green-600 dark:text-green-400 font-semibold mt-1 block">ATS Score: {atsScore}</span>
-            )}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-gray-500">Initial:</span>
+                <span className="text-sm font-medium">{initialScore}</span>
+              </div>
+              <div className={`flex items-center gap-1 ${scoreImprovement >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="text-sm">
+                  {scoreImprovement >= 0 ? '↑' : '↓'} {Math.abs(scoreImprovement)}
+                </span>
+                <span className="text-xs">({Math.abs(improvementPercentage)}%)</span>
+              </div>
+            </div>
           </div>
         </div>
+
         <button type="button" className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800" tabIndex={-1}>
           {expanded ? (
             <ChevronUpIcon className="w-6 h-6 text-blue-500" />
@@ -96,6 +87,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
           )}
         </button>
       </div>
+
       {expanded && (
         <div className="mt-6 space-y-4">
           {summary && (
@@ -103,40 +95,32 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
               <span className="font-semibold text-blue-700 dark:text-blue-300">Summary:</span> {summary}
             </div>
           )}
+
           <div className="w-full flex flex-col md:flex-row gap-4 justify-center items-stretch">
             <div className="flex-1 min-w-[0] flex flex-col bg-green-50/40 dark:bg-green-900/30 rounded-lg p-5 border border-green-100 dark:border-green-800 shadow-sm items-center justify-start">
               <div className="flex items-center gap-2 font-semibold text-green-700 dark:text-green-300 mb-2">
                 <span className="text-lg">✅</span>
-                <span>Strengths</span>
+                <span>Strengths ({strengths.length})</span>
               </div>
               <ul className="list-disc list-inside text-green-900 dark:text-green-100 text-sm pl-2 w-full">
                 {strengths.length > 0 ? strengths.map((s, i) => <li key={i}>{s}</li>) : <li>No strengths listed.</li>}
               </ul>
             </div>
+
             <div className="flex-1 min-w-[0] flex flex-col bg-red-50/40 dark:bg-red-900/30 rounded-lg p-5 border border-red-100 dark:border-red-800 shadow-sm items-center justify-start">
               <div className="flex items-center gap-2 font-semibold text-red-700 dark:text-red-300 mb-2">
                 <span className="text-lg">⚠️</span>
-                <span>Weaknesses</span>
+                <span>Weaknesses ({weaknesses.length})</span>
               </div>
               <ul className="list-disc list-inside text-red-900 dark:text-red-100 text-sm pl-2 w-full">
                 {weaknesses.length > 0 ? weaknesses.map((w, i) => <li key={i}>{w}</li>) : <li>No weaknesses listed.</li>}
               </ul>
             </div>
           </div>
-          {/* {iterations && (
-            <div className="w-full text-xs text-gray-500 dark:text-gray-400 text-center mt-2">Iterations: {iterations}</div>
-          )} */}
         </div>
       )}
+
       <div className="flex gap-3 mt-6">
-        {/* {showCompare && onCompare && (
-          <button
-            onClick={onCompare}
-            className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            Compare Resumes
-          </button>
-        )} */}
         {downloadUrl && onDownload && (
           <button
             onClick={onDownload}
@@ -158,4 +142,4 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
   );
 };
 
-export default ScoreCard; 
+export default ScoreCard;

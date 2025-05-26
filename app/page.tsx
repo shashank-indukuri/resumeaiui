@@ -12,12 +12,20 @@ export default function Home() {
   const [resume, setResume] = useState<File | null>(null);
   const [jobdesc, setJobdesc] = useState("");
   const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState("");
-  const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
   const [showComparison, setShowComparison] = useState(false);
-  const [resumeDiff, setResumeDiff] = useState<Record<string, unknown> | null>(null);
+  const [optimizationResult, setOptimizationResult] = useState<{
+    initial_score: number;
+    final_score: number;
+    summary: string;
+    strengths: string[];
+    weaknesses: string[];
+    pdf_download_url: string;
+    diff: {
+      original: Record<string, ResumeData>;
+      optimized: Record<string, ResumeData>;
+    };
+  } | null>(null);
 
   // Dynamic, creative loading messages
   const loadingMessages = [
@@ -51,9 +59,7 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setScore(null);
-    setFeedback("");
-    setDownloadUrl(undefined);
+    setOptimizationResult(null);
     setShowComparison(false); 
 
     try {
@@ -63,13 +69,8 @@ export default function Home() {
         return;
       }
       const result = await optimizeResume({ resume, jobdesc });
+      setOptimizationResult(result);
       
-      // Parse the score from result_text
-      const match = result.result_text.match(/score\s*:?\s*(\d+)/i);
-      setScore(match ? parseInt(match[1], 10) : 90);
-      setFeedback(result.result_text);
-      setDownloadUrl(result.pdf_download_url);
-      setResumeDiff(result.diff);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -117,27 +118,27 @@ export default function Home() {
             <span className="text-xs text-gray-500 dark:text-gray-400">This may take up to 2 minutes. Please don&apos;t close this tab.</span>
           </div>
         )}
-        {score !== null && (
+        {optimizationResult && (
           <ScoreCard 
-            score={score} 
-            feedback={feedback} 
-            downloadUrl={downloadUrl} 
-            onDownload={downloadUrl ? (() => downloadOptimizedResume(downloadUrl, resume?.name)) : undefined}
+            initialScore={optimizationResult.initial_score}
+            finalScore={optimizationResult.final_score}
+            summary={optimizationResult.summary}
+            strengths={optimizationResult.strengths}
+            weaknesses={optimizationResult.weaknesses}
+            downloadUrl={optimizationResult.pdf_download_url}
+            onDownload={() => downloadOptimizedResume(optimizationResult.pdf_download_url, resume?.name)}
             showCompare={true}
-            onCompare={() => {
-              setShowComparison(true);
-              setResumeDiff(resumeDiff);
-            }}
+            onCompare={() => setShowComparison(true)}
           />
         )}
       </div>
  
-      {showComparison && resumeDiff && (
+      {showComparison && optimizationResult?.diff && (
         <ResumeComparison 
-          original={resumeDiff.original as Record<string, ResumeData>}
-          optimized={resumeDiff.optimized as Record<string, ResumeData>}
+          original={optimizationResult.diff.original as Record<string, ResumeData>}
+          optimized={optimizationResult.diff.optimized as Record<string, ResumeData>}
         />
-        )}
+      )}
       <footer className="mt-10 text-gray-500 dark:text-gray-400 text-xs text-center">
         &copy; {new Date().getFullYear()} Resume Optimizer AI. All rights reserved.
       </footer>
