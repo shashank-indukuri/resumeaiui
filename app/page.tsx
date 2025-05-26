@@ -21,7 +21,10 @@ export default function Home() {
     strengths: string[];
     weaknesses: string[];
     pdf_download_url: string;
-    diff: any;
+    diff: {
+      original: Record<string, ResumeData>;
+      optimized: Record<string, ResumeData>;
+    };
   } | null>(null);
 
   // Dynamic, creative loading messages
