@@ -92,12 +92,28 @@ export default function Home() {
           <JobDescInput value={jobdesc} onChange={setJobdesc} disabled={loading} />
           <button
             type="submit"
-            className="mt-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-            disabled={loading}
+            className={`mt-2 px-6 py-3 rounded-lg font-semibold shadow transition ${
+              !resume || !jobdesc
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
+            disabled={!resume || !jobdesc || loading}
           >
             {loading ? "Optimizing..." : "Optimize Resume"}
           </button>
         </form>
+        {(!resume || !jobdesc) && (
+          <div className="animate-bounce flex items-center gap-2 text-sm text-yellow-600 dark:text-yellow-300 mt-1">
+            <span>✨</span>
+            <span>
+              {!resume && !jobdesc
+                ? "Upload resume and add job description to continue"
+                : !resume
+                ? "Don't forget to upload your resume!"
+                : "Add the job description to optimize"}
+            </span>
+          </div>
+        )}
         {error && (
           <div className="w-full flex justify-center mt-2">
             <div className="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/40 border border-yellow-200 dark:border-yellow-700 rounded-lg px-4 py-2 text-yellow-800 dark:text-yellow-200 text-sm shadow-sm max-w-md text-center">
