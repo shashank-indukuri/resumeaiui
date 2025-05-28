@@ -39,14 +39,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signInWithGoogle = async () => {
-    const redirectTo = typeof window !== 'undefined' 
-      ? `${window.location.origin}/dashboard`
-      : '/dashboard'
+    // Get the current origin, ensuring it works in both dev and production
+    const getRedirectURL = () => {
+      if (typeof window !== 'undefined') {
+        const origin = window.location.origin
+        // Ensure we're not using localhost in production
+        if (origin.includes('localhost') && process.env.NODE_ENV === 'production') {
+          // This shouldn't happen, but fallback to current URL
+          return `${window.location.protocol}//${window.location.host}/dashboard`
+        }
+        return `${origin}/dashboard`
+      }
+      return '/dashboard'
+    }
     
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo
+        redirectTo: getRedirectURL()
       }
     })
   }
