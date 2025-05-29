@@ -24,23 +24,23 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
       {/* Navigation */}
-      <nav className="absolute top-0 w-full p-6 flex justify-between items-center z-10">
+      <nav className="fixed top-0 w-full p-3 md:p-4 flex justify-between items-center z-10 bg-gradient-to-r from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">R</span>
+          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">R</span>
           </div>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">Resume AI</span>
+          <span className="text-lg font-bold text-gray-900 dark:text-white">Resume AI</span>
         </div>
         <button
           onClick={signInWithGoogle}
-          className="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors font-medium"
+          className="px-3 py-1.5 text-blue-600 hover:text-blue-700 transition-colors font-medium text-sm"
         >
           Sign In
         </button>
       </nav>
 
       {/* Hero Section */}
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center pt-16 md:pt-20">
         <div className="max-w-4xl mx-auto">
           {/* Beta Badge */}
           <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mb-6">
@@ -111,7 +111,7 @@ export default function LandingPage() {
       </div>
 
       {/* Footer */}
-      <footer className="absolute bottom-0 w-full p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+      <footer className="relative w-full p-6 text-center text-gray-500 dark:text-gray-400 text-sm mt-8">
         &copy; {new Date().getFullYear()} Resume Optimizer AI. All rights reserved.
       </footer>
     </div>
