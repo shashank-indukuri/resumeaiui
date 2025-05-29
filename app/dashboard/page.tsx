@@ -71,7 +71,7 @@ export default function Dashboard() {
     setOptimizing(true);
     setError("");
     setOptimizationResult(null);
-    setShowComparison(false); 
+    setShowComparison(false);
 
     try {
       if (!resume || !jobdesc) {
@@ -79,9 +79,19 @@ export default function Dashboard() {
         setOptimizing(false);
         return;
       }
-      const result = await optimizeResume({ resume, jobdesc });
+
+      if (!user) {
+        setError("User not authenticated.");
+        setOptimizing(false);
+        return;
+      }
+
+      const userId = user.id; // Retrieve userId from Supabase user object
+      const userEmail = user.email || "unknown@example.com"; // Fallback for user email
+      const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Unknown User"; // Fallback for user name
+
+      const result = await optimizeResume({ resume, jobdesc, userId, userEmail, userName });
       setOptimizationResult(result);
-      
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -198,7 +208,13 @@ export default function Dashboard() {
             strengths={optimizationResult.strengths}
             weaknesses={optimizationResult.weaknesses}
             downloadUrl={optimizationResult.pdf_download_url}
-            onDownload={() => downloadOptimizedResume(optimizationResult.pdf_download_url, resume?.name)}
+            onDownload={() => downloadOptimizedResume(
+              optimizationResult.pdf_download_url,
+              user.id,
+              user.email || "unknown@example.com",
+              user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Unknown User",
+              resume?.name || "optimized_resume.pdf"
+            )}
             showCompare={true}
             onCompare={() => setShowComparison(true)}
           />
