@@ -113,27 +113,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Determine if user has access
   const hasAccess = user?.user_metadata?.hasAccess || false
 
+  // Get the current origin, ensuring it works in both dev and production
+  const getRedirectURL = () => {
+    if (typeof window !== 'undefined') {
+      const origin = window.location.origin;
+      // Ensure we're not using localhost in production
+      if (origin.includes('localhost') && process.env.NODE_ENV === 'production') {
+        // This shouldn't happen, but fallback to current URL
+        return `${window.location.protocol}//${window.location.host}/dashboard`;
+      }
+      return `${origin}/dashboard`;
+    }
+    return '/dashboard'; // fallback for SSR, though usually not needed
+  };
+
   const value = {
     user,
     loading,
     signInWithGoogle: async () => {
       try {
-        // Use location.origin if available, otherwise fallback to window.location or ''
-        let origin = '';
-        if (typeof window !== 'undefined') {
-          origin = window.location.origin;
-        } else if (typeof location !== 'undefined') {
-          origin = location.origin;
-        }
+        const redirectTo = getRedirectURL();
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: `${origin}/auth/callback`,
+            redirectTo,
           },
-        })
-        if (error) throw error
+        });
+        if (error) throw error;
       } catch (error) {
-        console.error('Error signing in with Google:', error)
+        console.error('Error signing in with Google:', error);
       }
     },
     signOut: async () => {
