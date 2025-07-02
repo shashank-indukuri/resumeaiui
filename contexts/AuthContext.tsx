@@ -69,46 +69,121 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    let isMounted = true;
+    // Helper to safely set state only if mounted
+    const safeSetUser = (user: User | null) => {
+      if (isMounted) {
+        setUser(user);
+      }
+    };
+    const safeSetLoading = (loading: boolean) => {
+      if (isMounted) {
+        setLoading(loading);
+      }
+    };
+
+    // Add a timeout to catch hanging getSession and fallback to localStorage session parse
+    let sessionTimeout = setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        const supaKey = Object.keys(window.localStorage).find(k => k.includes('auth-token'));
+        if (supaKey) {
+          try {
+            const sessionObj = JSON.parse(window.localStorage.getItem(supaKey) || '{}');
+            if (sessionObj && sessionObj.user) {
+              // Check if the user matches the last signed-in user (by id or email)
+              const lastUserId = sessionStorage.getItem('lastUserId');
+              const lastUserEmail = sessionStorage.getItem('lastUserEmail');
+              const currentUserId = sessionObj.user.id;
+              const currentUserEmail = sessionObj.user.email;
+              if (
+                (!lastUserId && !lastUserEmail) ||
+                (lastUserId === currentUserId) ||
+                (lastUserEmail && lastUserEmail === currentUserEmail)
+              ) {
+                sessionStorage.setItem('lastUserId', currentUserId);
+                sessionStorage.setItem('lastUserEmail', currentUserEmail);
+                safeSetUser({
+                  ...sessionObj.user,
+                  user_metadata: {
+                    ...sessionObj.user.user_metadata,
+                    hasAccess: true,
+                  },
+                });
+                safeSetLoading(false);
+                return;
+              } else {
+                // User mismatch, clear fallback
+                window.localStorage.removeItem(supaKey);
+                sessionStorage.removeItem('lastUserId');
+                sessionStorage.removeItem('lastUserEmail');
+              }
+            }
+          } catch (e) {
+            console.error('[Auth] Error parsing localStorage session:', e);
+          }
+        }
+      }
+      safeSetUser(null);
+      safeSetLoading(false);
+    }, 2000);
+
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      clearTimeout(sessionTimeout);
       if (session) {
-        const userData = await updateOrCreateUser(session)
-        setUser({
-          ...session.user,
-          user_metadata: {
-            ...session.user.user_metadata,
-            hasAccess: userData?.has_access || false,
-          },
-        })
+        const userData = await updateOrCreateUser(session);
+        if (userData) {
+          safeSetUser({
+            ...session.user,
+            user_metadata: {
+              ...session.user.user_metadata,
+              hasAccess: userData?.has_access || false,
+            },
+          });
+        } else {
+          safeSetUser(null);
+        }
       } else {
-        setUser(null)
+        safeSetUser(null);
       }
-      setLoading(false)
-    })
+      safeSetLoading(false);
+    }).catch((err) => {
+      clearTimeout(sessionTimeout);
+      console.error('[Auth] getSession error:', err)
+      safeSetUser(null);
+      safeSetLoading(false);
+    });
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
-        const userData = await updateOrCreateUser(session)
-        setUser({
-          ...session.user,
-          user_metadata: {
-            ...session.user.user_metadata,
-            hasAccess: userData?.has_access || false,
-          },
-        })
+        const userData = await updateOrCreateUser(session);
+        if (userData) {
+          safeSetUser({
+            ...session.user,
+            user_metadata: {
+              ...session.user.user_metadata,
+              hasAccess: userData?.has_access || false,
+            },
+          });
+        } else {
+          safeSetUser(null);
+        }
       } else {
-        setUser(null)
+        safeSetUser(null);
       }
-      setLoading(false)
-    })
+      safeSetLoading(false);
+    });
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
+      isMounted = false;
+      subscription.unsubscribe();
+      clearTimeout(sessionTimeout);
+      console.log('[Auth] Cleanup: unsubscribed and unmounted')
+    };
+  }, []);
 
   // Determine if user has access
   const hasAccess = user?.user_metadata?.hasAccess || false
