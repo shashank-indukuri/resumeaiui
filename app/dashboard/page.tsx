@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import ResumeUploader from "../ResumeUploader";
 import JobDetailsInput from "../components/JobDetailsInput";
+import TemplateSelector from "../components/TemplateSelector";
 import ScoreCard from "../components/ScoreCard";
 import { optimizeResume, downloadOptimizedResume } from "../api";
 import ResumeComparison from "../components/ResumeComparison";
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [jobdesc, setJobdesc] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [company, setCompany] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("resume_template_7.html");
   const [optimizing, setOptimizing] = useState(false);
   const [error, setError] = useState("");
   const [showComparison, setShowComparison] = useState(false);
@@ -97,7 +99,7 @@ export default function Dashboard() {
       const userEmail = user.email || "unknown@example.com"; // Fallback for user email
       const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Unknown User"; // Fallback for user name
 
-      const result = await optimizeResume({ resume, jobdesc, jobTitle, company, userId, userEmail, userName });
+      const result = await optimizeResume({ resume, jobdesc, jobTitle, company, resumeTemplate: selectedTemplate, userId, userEmail, userName });
       setOptimizationResult(result);
     } catch (err) {
       if (err instanceof Error) {
@@ -309,6 +311,11 @@ export default function Dashboard() {
                 onJobTitleChange={setJobTitle}
                 onCompanyChange={setCompany}
                 onJobDescriptionChange={setJobdesc}
+                disabled={optimizing}
+              />
+              <TemplateSelector
+                selectedTemplate={selectedTemplate}
+                onTemplateChange={setSelectedTemplate}
                 disabled={optimizing}
               />
               <button

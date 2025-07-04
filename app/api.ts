@@ -1,11 +1,12 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-export async function optimizeResume({ resume, jobdesc, jobTitle, company, userId, userEmail, userName }: { resume: File; jobdesc: string; jobTitle?: string; company?: string; userId: string; userEmail: string; userName: string }) {
+export async function optimizeResume({ resume, jobdesc, jobTitle, company, resumeTemplate, userId, userEmail, userName }: { resume: File; jobdesc: string; jobTitle?: string; company?: string; resumeTemplate?: string; userId: string; userEmail: string; userName: string }) {
   const formData = new FormData();
   formData.append("resume_pdf", resume);
   formData.append("jobdesc_text", jobdesc);
   if (jobTitle) formData.append("job_title", jobTitle);
   if (company) formData.append("company", company);
+  if (resumeTemplate) formData.append("resume_template", resumeTemplate);
 
   const response = await fetch(`${API_BASE_URL}/optimize_resume/`, {
     method: "POST",
@@ -95,7 +96,7 @@ export async function getResumeHistory(
   return response.json();
 }
 
-export async function generatePDFFromHistory(generationId: string, userId: string, userEmail: string, userName: string) {
+export async function generatePDFFromHistory(generationId: string, userId: string, userEmail: string, userName: string, resumeTemplate: string = "resume_template_7.html") {
   const response = await fetch(`${API_BASE_URL}/generate-pdf`, {
     method: "POST",
     headers: {
@@ -104,7 +105,10 @@ export async function generatePDFFromHistory(generationId: string, userId: strin
       "X-User-Email": userEmail,
       "X-User-Name": userName,
     },
-    body: JSON.stringify({ resume_generation_id: generationId }),
+    body: JSON.stringify({ 
+      resume_generation_id: generationId,
+      resume_template: resumeTemplate 
+    }),
   });
 
   if (!response.ok) throw new Error("Failed to generate PDF");

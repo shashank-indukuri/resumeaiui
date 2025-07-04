@@ -8,6 +8,7 @@ interface ResumeGeneration {
   original_filename: string;
   ats_score: number;
   created_at: string;
+  resume_template?: string;
   jobs?: {
     title?: string;
     company?: string;
@@ -100,7 +101,8 @@ export default function ResumeHistory() {
         generation.id,
         user.id,
         user.email || "",
-        user.user_metadata?.full_name || user.email || ""
+        user.user_metadata?.full_name || user.email || "",
+        generation.resume_template || "resume_template_7.html"
       );
       
       await downloadOptimizedResume(
