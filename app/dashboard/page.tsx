@@ -5,17 +5,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import ResumeUploader from "../ResumeUploader";
 import JobDescInput from "../JobDescInput";
+import JobDetailsInput from "../components/JobDetailsInput";
 import ScoreCard from "../components/ScoreCard";
 import { optimizeResume, downloadOptimizedResume } from "../api";
 import ResumeComparison from "../components/ResumeComparison";
+import ResumeHistory from "../components/ResumeHistory";
 
 type ResumeData = Record<string, unknown> | string | number | boolean | null | undefined;
 
 export default function Dashboard() {
   const { user, signOut, loading } = useAuth();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'optimize' | 'history'>('optimize');
   const [resume, setResume] = useState<File | null>(null);
   const [jobdesc, setJobdesc] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [company, setCompany] = useState("");
   const [optimizing, setOptimizing] = useState(false);
   const [error, setError] = useState("");
   const [showComparison, setShowComparison] = useState(false);
@@ -93,7 +98,7 @@ export default function Dashboard() {
       const userEmail = user.email || "unknown@example.com"; // Fallback for user email
       const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Unknown User"; // Fallback for user name
 
-      const result = await optimizeResume({ resume, jobdesc, userId, userEmail, userName });
+      const result = await optimizeResume({ resume, jobdesc, jobTitle, company, userId, userEmail, userName });
       setOptimizationResult(result);
     } catch (err) {
       if (err instanceof Error) {
@@ -247,18 +252,66 @@ export default function Dashboard() {
 
       {/* Adjust main content padding for new header height */}
       <main className="pt-28 sm:pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="w-full max-w-3xl mx-auto">
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-800 relative">
-            <span className="absolute -top-3 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider z-10">Beta</span>
-            
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Start Optimizing</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Upload your resume and paste the job description to get personalized optimization</p>
+        <div className="w-full max-w-4xl mx-auto">
+          {/* Tab Navigation */}
+          <div className="mb-6">
+            <div className="border-b border-gray-200 dark:border-gray-700">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('optimize')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'optimize'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Optimize Resume
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveTab('history')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'history'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    History
+                  </div>
+                </button>
+              </nav>
             </div>
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'optimize' ? (
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-800 relative">
+              <span className="absolute -top-3 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider z-10">Beta</span>
+              
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Start Optimizing</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Upload your resume and paste the job description to get personalized optimization</p>
+              </div>
 
             <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               <ResumeUploader onFileChange={setResume} uploading={optimizing} />
-              <JobDescInput value={jobdesc} onChange={setJobdesc} disabled={optimizing} />
+              <JobDetailsInput 
+                jobTitle={jobTitle}
+                company={company}
+                jobDescription={jobdesc}
+                onJobTitleChange={setJobTitle}
+                onCompanyChange={setCompany}
+                onJobDescriptionChange={setJobdesc}
+                disabled={optimizing}
+              />
               <button
                 type="submit"
                 className={`mt-2 px-6 py-3 rounded-lg font-semibold shadow-lg transition transform hover:scale-[1.02] ${
@@ -347,7 +400,12 @@ export default function Dashboard() {
                 />
               </div>
             )}
-          </div>
+            </div>
+          ) : (
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-800">
+              <ResumeHistory />
+            </div>
+          )}
         </div>
       </main>
 
