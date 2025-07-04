@@ -108,7 +108,7 @@ export default function LandingPage() {
               Why Choose Resume AI?
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Powered by advanced AI technology to give you the competitive edge in today's job market.
+              Powered by advanced AI technology to give you the competitive edge in today&apos;s job market.
             </p>
           </div>
           
@@ -334,7 +334,7 @@ export default function LandingPage() {
               Get in Touch
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              Have questions? We'd love to hear from you.
+              Have questions? We&apos;d love to hear from you.
             </p>
           </div>
           
@@ -407,7 +407,7 @@ export default function LandingPage() {
             Ready to Land Your Dream Job?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of job seekers who've already optimized their resumes with AI.
+            Join thousands of job seekers who&apos;ve already optimized their resumes with AI.
           </p>
           <button
             onClick={signInWithGoogle}
