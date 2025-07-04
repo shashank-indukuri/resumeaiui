@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import ResumeUploader from "../ResumeUploader";
-import JobDescInput from "../JobDescInput";
 import JobDetailsInput from "../components/JobDetailsInput";
 import ScoreCard from "../components/ScoreCard";
 import { optimizeResume, downloadOptimizedResume } from "../api";

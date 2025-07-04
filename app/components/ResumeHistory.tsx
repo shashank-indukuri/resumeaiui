@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getResumeHistory, generatePDFFromHistory, downloadOptimizedResume } from "../api";
 
@@ -30,13 +30,7 @@ export default function ResumeHistory() {
     endDate: ''
   });
 
-  useEffect(() => {
-    if (user) {
-      fetchHistory();
-    }
-  }, [user]);
-
-  const fetchHistory = async (page = 1) => {
+  const fetchHistory = useCallback(async (page = 1) => {
     if (!user) return;
     
     setLoading(true);
@@ -70,7 +64,13 @@ export default function ResumeHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, pagination.limit, filters]);
+
+  useEffect(() => {
+    if (user) {
+      fetchHistory();
+    }
+  }, [user, fetchHistory]);
   
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
