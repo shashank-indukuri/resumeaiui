@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [optimizing, setOptimizing] = useState(false);
   const [error, setError] = useState("");
   const [showComparison, setShowComparison] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [optimizationResult, setOptimizationResult] = useState<{
     initial_score: number;
     final_score: number;
@@ -187,63 +188,111 @@ export default function Dashboard() {
       {/* Header */}
       <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 sm:py-0 h-auto sm:h-16">
-            <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto gap-2 sm:gap-4">
-              {/* Logo Section - Always Visible */}
-              <div className="flex items-center justify-between w-full sm:w-auto">
-                <VanaraLogo size="md" />
-                
-                {/* Mobile Sign Out Button */}
-                <button
-                  onClick={handleSignOut}
-                  className="sm:hidden inline-flex items-center px-2 py-1 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Divider - Hidden on Mobile */}
-              <div className="hidden sm:block h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
-
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <VanaraLogo size="md" />
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
               {/* User Info */}
               <div className="flex items-center space-x-3">
                 <Image 
                   src={user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'User')}&background=2D5A3D&color=fff`}
                   alt="Profile"
-                  width={40}
-                  height={40}
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full ring-2 ring-[#2D5A3D] dark:ring-[#F4A261]"
                   onError={(e) => {
                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'User')}&background=2D5A3D&color=fff`;
                   }}
                 />
-                <div>
+                <div className="hidden lg:block">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Ready to evolve your career?</p>
                 </div>
               </div>
+
+              {/* Sign Out Button */}
+              <button
+                onClick={handleSignOut}
+                className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-lg text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Sign Out
+              </button>
             </div>
 
-            {/* Desktop Sign Out Button - Hidden on Mobile */}
-            <button
-              onClick={handleSignOut}
-              className="hidden sm:inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-lg text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Sign Out
-            </button>
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-[#2D5A3D] hover:bg-gray-100 dark:text-gray-300 dark:hover:text-[#F4A261] dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#2D5A3D] transition-colors"
+                aria-expanded="false"
+              >
+                <span className="sr-only">Open main menu</span>
+                {!mobileMenuOpen ? (
+                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  </svg>
+                ) : (
+                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                {/* User Info Mobile */}
+                <div className="flex items-center space-x-3 px-3 py-2">
+                  <Image 
+                    src={user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'User')}&background=2D5A3D&color=fff`}
+                    alt="Profile"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full ring-2 ring-[#2D5A3D] dark:ring-[#F4A261]"
+                    onError={(e) => {
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'User')}&background=2D5A3D&color=fff`;
+                    }}
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Ready to evolve your career?</p>
+                  </div>
+                </div>
+                
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[#2D5A3D] hover:bg-gray-50 dark:text-gray-300 dark:hover:text-[#F4A261] dark:hover:bg-gray-800 transition-colors flex items-center"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* Adjust main content padding for new header height */}
-      <main className="pt-28 sm:pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Main content */}
+      <main className="pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="w-full max-w-4xl mx-auto">
           {/* Tab Navigation */}
           <div className="mb-6">

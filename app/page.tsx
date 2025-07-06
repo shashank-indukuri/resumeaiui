@@ -1,12 +1,13 @@
 "use client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import VanaraLogo from "./components/VanaraLogo";
 
 export default function LandingPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (user && !loading) {
@@ -28,8 +29,11 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo */}
             <VanaraLogo size="md" />
-            <div className="flex items-center space-x-6">
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6">
               <a href="#features" className="text-gray-600 hover:text-[#2D5A3D] dark:text-gray-300 dark:hover:text-[#F4A261] transition-colors">Features</a>
               <a href="#pricing" className="text-gray-600 hover:text-[#2D5A3D] dark:text-gray-300 dark:hover:text-[#F4A261] transition-colors">Pricing</a>
               <a href="#contact" className="text-gray-600 hover:text-[#2D5A3D] dark:text-gray-300 dark:hover:text-[#F4A261] transition-colors">Contact</a>
@@ -40,7 +44,67 @@ export default function LandingPage() {
                 Get Started
               </button>
             </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-[#2D5A3D] hover:bg-gray-100 dark:text-gray-300 dark:hover:text-[#F4A261] dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#2D5A3D] transition-colors"
+                aria-expanded="false"
+              >
+                <span className="sr-only">Open main menu</span>
+                {!mobileMenuOpen ? (
+                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  </svg>
+                ) : (
+                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Mobile menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                <a
+                  href="#features"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[#2D5A3D] hover:bg-gray-50 dark:text-gray-300 dark:hover:text-[#F4A261] dark:hover:bg-gray-800 transition-colors"
+                >
+                  Features
+                </a>
+                <a
+                  href="#pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[#2D5A3D] hover:bg-gray-50 dark:text-gray-300 dark:hover:text-[#F4A261] dark:hover:bg-gray-800 transition-colors"
+                >
+                  Pricing
+                </a>
+                <a
+                  href="#contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[#2D5A3D] hover:bg-gray-50 dark:text-gray-300 dark:hover:text-[#F4A261] dark:hover:bg-gray-800 transition-colors"
+                >
+                  Contact
+                </a>
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      signInWithGoogle();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full vanara-btn-primary px-6 py-3 rounded-lg font-medium text-center"
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -52,23 +116,23 @@ export default function LandingPage() {
             Ancient Wisdom Meets Modern AI
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
             Evolve Your Career with
             <span className="vanara-text-gradient block mt-2"> Vanara Intelligence</span>
           </h1>
           
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto leading-relaxed">
             Like the legendary vanaras—intelligent, agile, and adaptive—transform your resume with AI that helps you navigate and conquer your career journey.
           </p>
           
-          <p className="text-lg text-[#2D5A3D] dark:text-[#F4A261] mb-8 font-medium">
+          <p className="text-base md:text-lg text-[#2D5A3D] dark:text-[#F4A261] mb-8 font-medium">
             Adapt. Transform. Land Your Dream Job.
           </p>
           
           <div className="flex justify-center mb-12">
             <button
               onClick={signInWithGoogle}
-              className="vanara-btn-primary inline-flex items-center px-8 py-4 font-semibold rounded-lg shadow-lg text-lg"
+              className="vanara-btn-primary inline-flex items-center px-6 md:px-8 py-3 md:py-4 font-semibold rounded-lg shadow-lg text-base md:text-lg"
             >
               Start Your Transformation
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +141,7 @@ export default function LandingPage() {
             </button>
           </div>
           
-          <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm text-gray-500">
             <div className="flex items-center">
               <svg className="w-5 h-5 text-[#2D5A3D] mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
