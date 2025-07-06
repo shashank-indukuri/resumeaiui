@@ -194,7 +194,7 @@ export default function LandingPage() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Lightning Agility</h3>
-              <p className="text-gray-600 dark:text-gray-300">Swift as a vanara's leap, get your optimized resume in under 2 minutes with precision and speed.</p>
+              <p className="text-gray-600 dark:text-gray-300">Swift as a vanara&apos;s leap, get your optimized resume in under 2 minutes with precision and speed.</p>
             </div>
             
             <div className="vanara-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
@@ -224,7 +224,7 @@ export default function LandingPage() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Loyal Companion</h3>
-              <p className="text-gray-600 dark:text-gray-300">Like a faithful vanara ally, we're with you throughout your entire career journey.</p>
+              <p className="text-gray-600 dark:text-gray-300">Like a faithful vanara ally, we&apos;re with you throughout your entire career journey.</p>
             </div>
             
             <div className="vanara-card rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
@@ -471,7 +471,7 @@ export default function LandingPage() {
             Ready to Transform Your Career?
           </h2>
           <p className="text-xl text-[#F1F8E9] mb-8">
-            Join thousands who've already evolved their careers with Vanara intelligence.
+            Join thousands who&apos;ve already evolved their careers with Vanara intelligence.
           </p>
           <button
             onClick={signInWithGoogle}

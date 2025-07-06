@@ -164,7 +164,7 @@ export default function Dashboard() {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Access Restricted</h2>
             <p className="text-gray-600 dark:text-gray-400">
               🐒 The vanara wisdom is currently shared with a select group of early explorers.<br />
-              Want to join the transformation? Reach out and we'll guide you on your journey! ✨
+              Want to join the transformation? Reach out and we&apos;ll guide you on your journey! ✨
             </p>
             <div className="pt-4">
               <a
