@@ -14,8 +14,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Resume Optimizer AI",
-  description: "Optimize your resume with AI for better job matches",
+  title: "Vanara.ai - Evolve Your Career with AI Intelligence",
+  description: "Transform your resume with the wisdom of vanaras and the power of AI. Navigate your career journey with intelligence, agility, and purpose.",
+  keywords: "resume optimization, AI resume, career transformation, job search, ATS optimization, vanara intelligence",
+  authors: [{ name: "Vanara.ai Team" }],
+  openGraph: {
+    title: "Vanara.ai - Evolve Your Career with AI Intelligence",
+    description: "Transform your resume with the wisdom of vanaras and the power of AI. Navigate your career journey with intelligence, agility, and purpose.",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vanara.ai - Evolve Your Career with AI Intelligence",
+    description: "Transform your resume with the wisdom of vanaras and the power of AI. Navigate your career journey with intelligence, agility, and purpose.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", type: "image/x-icon" }
+    ]
+  },
 };
 
 export default function RootLayout({

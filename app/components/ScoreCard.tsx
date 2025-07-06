@@ -29,7 +29,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
   const improvementPercentage = Math.round((scoreImprovement / initialScore) * 100);
 
   return (
-    <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-800">
+    <div className="w-full vanara-card rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setExpanded(v => !v)}>
         <div className="flex items-center gap-6">
           {/* Final Score Circle */}
@@ -45,7 +45,7 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
                 cy="40"
               />
               <circle
-                className="text-blue-600 dark:text-blue-400"
+                className="text-[#2D5A3D] dark:text-[#F4A261]"
                 strokeWidth="8"
                 strokeDasharray={`${finalScore * 2.26} 226`}
                 strokeLinecap="round"
@@ -63,15 +63,15 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
 
           {/* Score Comparison */}
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Resume Score</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Vanara Intelligence Score</h3>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <span className="text-sm text-gray-500">Initial:</span>
                 <span className="text-sm font-medium">{initialScore}</span>
               </div>
-              <div className={`flex items-center gap-1 ${scoreImprovement >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={`flex items-center gap-1 ${scoreImprovement >= 0 ? 'text-[#2D5A3D]' : 'text-red-600'}`}>
                 <span className="text-sm">
-                  {scoreImprovement >= 0 ? '↑' : '↓'} {Math.abs(scoreImprovement)}
+                  {scoreImprovement >= 0 ? '↗' : '↘'} {Math.abs(scoreImprovement)}
                 </span>
                 <span className="text-xs">({Math.abs(improvementPercentage)}%)</span>
               </div>
@@ -81,9 +81,9 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
 
         <button type="button" className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800" tabIndex={-1}>
           {expanded ? (
-            <ChevronUpIcon className="w-6 h-6 text-blue-500" />
+            <ChevronUpIcon className="w-6 h-6 text-[#2D5A3D] dark:text-[#F4A261]" />
           ) : (
-            <ChevronDownIcon className="w-6 h-6 text-blue-500" />
+            <ChevronDownIcon className="w-6 h-6 text-[#2D5A3D] dark:text-[#F4A261]" />
           )}
         </button>
       </div>
@@ -91,29 +91,29 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
       {expanded && (
         <div className="mt-6 space-y-4">
           {summary && (
-            <div className="w-full bg-blue-50/70 dark:bg-gray-800/70 rounded-lg p-4 text-gray-800 dark:text-gray-200 text-base border border-blue-100 dark:border-gray-700 mx-auto">
-              <span className="font-semibold text-blue-700 dark:text-blue-300">Summary:</span> {summary}
+            <div className="w-full bg-[#F1F8E9]/70 dark:bg-[#2D5A3D]/20 rounded-lg p-4 text-gray-800 dark:text-gray-200 text-base border border-[#2D5A3D]/20 dark:border-[#F4A261]/20 mx-auto">
+              <span className="font-semibold text-[#2D5A3D] dark:text-[#F4A261]">Vanara Wisdom:</span> {summary}
             </div>
           )}
 
           <div className="w-full flex flex-col md:flex-row gap-4 justify-center items-stretch">
-            <div className="flex-1 min-w-[0] flex flex-col bg-green-50/40 dark:bg-green-900/30 rounded-lg p-5 border border-green-100 dark:border-green-800 shadow-sm items-center justify-start">
-              <div className="flex items-center gap-2 font-semibold text-green-700 dark:text-green-300 mb-2">
-                <span className="text-lg">✅</span>
+            <div className="flex-1 min-w-[0] flex flex-col bg-[#2D5A3D]/10 dark:bg-[#2D5A3D]/30 rounded-lg p-5 border border-[#2D5A3D]/20 dark:border-[#2D5A3D]/40 shadow-sm items-center justify-start">
+              <div className="flex items-center gap-2 font-semibold text-[#2D5A3D] dark:text-[#F4A261] mb-2">
+                <span className="text-lg">🐒</span>
                 <span>Strengths ({strengths.length})</span>
               </div>
-              <ul className="list-disc list-inside text-green-900 dark:text-green-100 text-sm pl-2 w-full">
+              <ul className="list-disc list-inside text-[#2D5A3D] dark:text-green-100 text-sm pl-2 w-full">
                 {strengths.length > 0 ? strengths.map((s, i) => <li key={i}>{s}</li>) : <li>No strengths listed.</li>}
               </ul>
             </div>
 
-            <div className="flex-1 min-w-[0] flex flex-col bg-red-50/40 dark:bg-red-900/30 rounded-lg p-5 border border-red-100 dark:border-red-800 shadow-sm items-center justify-start">
-              <div className="flex items-center gap-2 font-semibold text-red-700 dark:text-red-300 mb-2">
-                <span className="text-lg">⚠️</span>
-                <span>Weaknesses ({weaknesses.length})</span>
+            <div className="flex-1 min-w-[0] flex flex-col bg-[#F4A261]/10 dark:bg-red-900/30 rounded-lg p-5 border border-[#F4A261]/20 dark:border-red-800 shadow-sm items-center justify-start">
+              <div className="flex items-center gap-2 font-semibold text-[#E76F51] dark:text-red-300 mb-2">
+                <span className="text-lg">⚡</span>
+                <span>Growth Areas ({weaknesses.length})</span>
               </div>
-              <ul className="list-disc list-inside text-red-900 dark:text-red-100 text-sm pl-2 w-full">
-                {weaknesses.length > 0 ? weaknesses.map((w, i) => <li key={i}>{w}</li>) : <li>No weaknesses listed.</li>}
+              <ul className="list-disc list-inside text-[#E76F51] dark:text-red-100 text-sm pl-2 w-full">
+                {weaknesses.length > 0 ? weaknesses.map((w, i) => <li key={i}>{w}</li>) : <li>No growth areas identified.</li>}
               </ul>
             </div>
           </div>
@@ -124,17 +124,17 @@ const ScoreCard: React.FC<ScoreCardProps> = ({
         {downloadUrl && onDownload && (
           <button
             onClick={onDownload}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="flex-1 vanara-btn-primary px-4 py-2 rounded-lg font-medium transition-colors"
           >
-            Download Resume
+            Download Transformed Resume
           </button>
         )}
         {showCompare && onCompare && (
           <button
             onClick={onCompare}
-            className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+            className="flex-1 vanara-btn-secondary px-4 py-2 rounded-lg font-medium transition-colors"
           >
-            Compare Changes
+            Compare Transformation
           </button>
         )}
       </div>
