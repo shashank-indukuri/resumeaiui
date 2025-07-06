@@ -122,7 +122,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto leading-relaxed">
-            Like the legendary vanaras—intelligent, agile, and adaptive—transform your resume with AI that helps you navigate and conquer your career journey.
+            Like the legendary vanaras · intelligent, agile, and adaptive · transform your resume with AI that helps you navigate and conquer your career journey.
           </p>
           
           <p className="text-base md:text-lg text-[#2D5A3D] dark:text-[#F4A261] mb-8 font-medium">
