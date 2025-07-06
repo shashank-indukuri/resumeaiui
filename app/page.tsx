@@ -65,7 +65,7 @@ export default function LandingPage() {
             Adapt. Transform. Land Your Dream Job.
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+          <div className="flex justify-center mb-12">
             <button
               onClick={signInWithGoogle}
               className="vanara-btn-primary inline-flex items-center px-8 py-4 font-semibold rounded-lg shadow-lg text-lg"
@@ -74,9 +74,6 @@ export default function LandingPage() {
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
-            </button>
-            <button className="inline-flex items-center px-8 py-4 border-2 border-[#2D5A3D] text-[#2D5A3D] dark:border-[#F4A261] dark:text-[#F4A261] font-semibold rounded-lg hover:bg-[#2D5A3D] hover:text-white dark:hover:bg-[#F4A261] dark:hover:text-[#2A2A2A] transition-all text-lg">
-              Watch Demo
             </button>
           </div>
           
@@ -245,7 +242,7 @@ export default function LandingPage() {
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-white mb-2">Vanara Pro</h3>
                 <div className="text-4xl font-bold text-white mb-2">
-                  $19<span className="text-lg text-[#F1F8E9]">/month</span>
+                  $29.99<span className="text-lg text-[#F1F8E9]">/month</span>
                 </div>
                 <p className="text-[#F1F8E9]">For serious career transformers</p>
               </div>
