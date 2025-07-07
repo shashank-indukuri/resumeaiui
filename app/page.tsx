@@ -141,25 +141,27 @@ export default function LandingPage() {
             </button>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm text-gray-500">
-            <div className="flex items-center">
-              <svg className="w-5 h-5 text-[#2D5A3D] mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              No credit card required
-            </div>
-            <div className="flex items-center">
-              <svg className="w-5 h-5 text-[#2D5A3D] mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              2-minute setup
-            </div>
-            <div className="flex items-center">
-              <svg className="w-5 h-5 text-[#2D5A3D] mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              Instant transformation
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center text-sm text-gray-500 w-full max-w-xs sm:max-w-none mx-auto">
+            <ul className="w-full flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-8 p-0 m-0 list-none">
+              <li className="flex items-center w-full sm:w-auto">
+                <svg className="w-5 h-5 text-[#2D5A3D] mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span>No credit card required</span>
+              </li>
+              <li className="flex items-center w-full sm:w-auto">
+                <svg className="w-5 h-5 text-[#2D5A3D] mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span>2-minute setup</span>
+              </li>
+              <li className="flex items-center w-full sm:w-auto">
+                <svg className="w-5 h-5 text-[#2D5A3D] mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span>Instant transformation</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
